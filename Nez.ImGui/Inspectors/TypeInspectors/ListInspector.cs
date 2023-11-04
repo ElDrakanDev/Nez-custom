@@ -11,7 +11,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 	public class ListInspector : AbstractTypeInspector
 	{
 		public static Type[] KSupportedTypes =
-			{typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(string), typeof(Vector2)};
+			{typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(string), typeof(Vector2), typeof(RectangleF)};
 
 		IList _list;
 		Type _elementType;
@@ -79,16 +79,25 @@ namespace Nez.ImGuiTools.TypeInspectors
 				}
 
 				ImGui.PushItemWidth(-ImGui.GetStyle().IndentSpacing);
+				bool alreadyShowingCollapsable = false;
 				for (var i = 0; i < _list.Count; i++)
 				{
 					if (_elementType == typeof(int))
-						DrawWidget((int) Convert.ChangeType(_list[i], _elementType), i);
+						DrawWidget((int)Convert.ChangeType(_list[i], _elementType), i);
 					else if (_elementType == typeof(float))
-						DrawWidget((float) Convert.ChangeType(_list[i], _elementType), i);
+						DrawWidget((float)Convert.ChangeType(_list[i], _elementType), i);
 					else if (_elementType == typeof(string))
-						DrawWidget((string) Convert.ChangeType(_list[i], _elementType), i);
+						DrawWidget((string)Convert.ChangeType(_list[i], _elementType), i);
 					else if (_elementType == typeof(Vector2))
-						DrawWidget((Vector2) Convert.ChangeType(_list[i], _elementType), i);
+						DrawWidget((Vector2)Convert.ChangeType(_list[i], _elementType), i);
+					else if (_elementType == typeof(RectangleF))
+					{
+						if (ImGui.CollapsingHeader($"Rectangle[{i}]") && alreadyShowingCollapsable is false)
+						{
+							alreadyShowingCollapsable = true;
+							DrawWidget((RectangleF)Convert.ChangeType(_list[i], _elementType), i);
+						}
+					}
 				}
 
 				ImGui.PopItemWidth();
@@ -121,6 +130,16 @@ namespace Nez.ImGuiTools.TypeInspectors
 			var vec = value.ToNumerics();
 			if (ImGui.DragFloat2($"{index}", ref vec))
 				_list[index] = vec.ToXNA();
+		}
+
+		void DrawWidget(RectangleF value, int index)
+		{
+			var pos = value.Location.ToNumerics();
+			var size = value.Size.ToNumerics();
+			bool modified = ImGui.DragFloat2("Position", ref pos);
+			modified = ImGui.DragFloat2("Size", ref size) || modified;
+			if(modified)
+				_list[index] = new RectangleF(pos.ToXNA(), size.ToXNA());
 		}
 	}
 }

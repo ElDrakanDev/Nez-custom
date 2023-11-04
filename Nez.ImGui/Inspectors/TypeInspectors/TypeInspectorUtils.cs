@@ -68,6 +68,9 @@ namespace Nez.ImGuiTools.TypeInspectors
 			var properties = ReflectionUtils.GetProperties(targetType);
 			foreach (var prop in properties)
 			{
+				if(target is IList && (prop.Name == "Item" || prop.Name == "Capacity"))
+					continue;
+
 				if (prop.IsDefined(notInspectableAttrType))
 					continue;
 
@@ -158,6 +161,10 @@ namespace Nez.ImGuiTools.TypeInspectors
 			    valueType.GetInterface(nameof(IList)) != null &&
 			    ListInspector.KSupportedTypes.Contains(valueType.GetGenericArguments()[0]))
 				return new TI.ListInspector();
+			if (valueType.IsGenericType && iListType.IsAssignableFrom(valueType)
+				&& valueType.GetInterface(nameof(IList)) != null
+				&& valueType.GetGenericArguments()[0].IsClass)
+				return new TI.ClassListInspector();
 
 			// check for custom inspectors before checking Nez types in case a subclass implemented one
 			var customInspectorType = valueType.GetTypeInfo().GetAttribute<CustomInspectorAttribute>();

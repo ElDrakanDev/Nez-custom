@@ -205,6 +205,12 @@ namespace Nez.ImGuiTools.TypeInspectors
 			_name = method.Name;
 		}
 
+		public void SetGetter(Func<object, object> getter, string name)
+		{
+			_getter = getter;
+			_name = name;
+		}
+
 		#endregion
 
 
