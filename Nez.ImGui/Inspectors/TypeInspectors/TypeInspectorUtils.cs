@@ -161,10 +161,18 @@ namespace Nez.ImGuiTools.TypeInspectors
 			    valueType.GetInterface(nameof(IList)) != null &&
 			    ListInspector.KSupportedTypes.Contains(valueType.GetGenericArguments()[0]))
 				return new TI.ListInspector();
+			// Custom inspectors
 			if (valueType.IsGenericType && iListType.IsAssignableFrom(valueType)
 				&& valueType.GetInterface(nameof(IList)) != null
 				&& valueType.GetGenericArguments()[0].IsClass)
 				return new TI.ClassListInspector();
+			if (valueType.IsGenericType && valueType.GetInterface(nameof(IDictionary)) != null
+				&& valueType.GetGenericArguments()[1].IsClass
+			)
+				return new TI.ClassDictInspector();
+			if (valueType.IsGenericType && valueType.GetInterface(nameof (IDictionary)) != null 
+					&& TI.SimpleDictInspector.SupportedValueTypes.Contains(valueType.GetGenericArguments()[1]))
+				return new TI.SimpleDictInspector();
 
 			// check for custom inspectors before checking Nez types in case a subclass implemented one
 			var customInspectorType = valueType.GetTypeInfo().GetAttribute<CustomInspectorAttribute>();

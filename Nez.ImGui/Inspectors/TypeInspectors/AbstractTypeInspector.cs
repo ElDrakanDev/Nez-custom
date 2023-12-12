@@ -198,11 +198,12 @@ namespace Nez.ImGuiTools.TypeInspectors
 			}
 		}
 
-		public void SetTarget(object target, MethodInfo method)
+		public void SetTarget(object target, MethodInfo method, Type valueType = null, string name = "")
 		{
 			_memberInfo = method;
 			_target = target;
-			_name = method.Name;
+			_name = method != null ? method.Name : name;
+			_valueType = valueType;
 		}
 
 		public void SetGetter(Func<object, object> getter, string name)
@@ -210,6 +211,8 @@ namespace Nez.ImGuiTools.TypeInspectors
 			_getter = getter;
 			_name = name;
 		}
+
+		public void SetSetter(Action<object> setter) => _setter = setter;
 
 		#endregion
 
