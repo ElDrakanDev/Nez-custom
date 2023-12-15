@@ -39,6 +39,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\FNA\FNA.csproj">
 		</ProjectReference>
+		<ProjectReference Include="..\Nez.Persistence\Nez.FNA.Persistence.csproj" />
 	</ItemGroup>
 	
 	<ItemGroup>

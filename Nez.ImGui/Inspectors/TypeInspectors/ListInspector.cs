@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
-using Num = System.Numerics;
 
 
 namespace Nez.ImGuiTools.TypeInspectors

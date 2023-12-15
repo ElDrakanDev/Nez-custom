@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Nez.ParticleDesigner;
 using Nez.Sprites;
 using Nez.Textures;
+using Nez.Persistence;
 using Nez.Tiled;
 using Microsoft.Xna.Framework.Audio;
 using Nez.BitmapFonts;
@@ -68,6 +69,42 @@ namespace Nez.Systems
 		{}
 
 		#region Strongly Typed Loaders
+
+		/// <summary>
+		/// Loads the json file. Note that it only caches the file content, not the returned instance.
+		/// </summary>
+		public T LoadJson<T>(string path)
+		{
+			string content;
+			if(LoadedAssets.TryGetValue(path, out var result))
+				content = (string)result;
+			else
+			{
+				path = Path.Combine(RootDirectory, path);
+				content = File.ReadAllText(path);
+				LoadedAssets.Add(path, content);
+			}
+			T obj = JsonDecoder.FromJson<T>(content);
+			return obj;
+		}
+
+		/// <summary>
+		/// Loads the nson file. Note that it only caches the file content, not the returned instance.
+		/// </summary>
+		public T LoadNson<T>(string path)
+		{
+			string content;
+			if (LoadedAssets.TryGetValue(path, out var result))
+				content = (string)result;
+			else
+			{
+				path = Path.Combine(RootDirectory, path);
+				content = File.ReadAllText(path);
+				LoadedAssets.Add(path, content);
+			}
+			T obj = NsonDecoder.FromNson<T>(content);
+			return obj;
+		}
 
 		/// <summary>
 		/// loads a Texture2D either from xnb or directly from a png/jpg. Note that xnb files should not contain the .xnb file

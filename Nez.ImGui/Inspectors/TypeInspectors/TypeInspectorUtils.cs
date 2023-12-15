@@ -63,6 +63,14 @@ namespace Nez.ImGuiTools.TypeInspectors
 					inspector.Initialize();
 					inspectors.Add(inspector);
 				}
+
+				if(field.GetAttribute<InspectorSerializableAttribute>() != null)
+				{
+					var serializeInspector = new TI.SerializerInspector();
+					serializeInspector.SetTarget(target, field);
+					inspector.Initialize();
+					inspectors.Add(serializeInspector);
+				}
 			}
 
 			var properties = ReflectionUtils.GetProperties(targetType);
@@ -102,6 +110,13 @@ namespace Nez.ImGuiTools.TypeInspectors
 					inspector.Initialize();
 					inspectors.Add(inspector);
 				}
+				if (prop.GetAttribute<InspectorSerializableAttribute>() != null)
+				{
+					var serializeInspector = new TI.SerializerInspector();
+					serializeInspector.SetTarget(target, prop);
+					inspector.Initialize();
+					inspectors.Add(serializeInspector);
+				}
 			}
 
 			var methods = GetAllMethodsWithAttribute<InspectorCallableAttribute>(targetType);
@@ -129,6 +144,19 @@ namespace Nez.ImGuiTools.TypeInspectors
 					continue;
 
 				yield return method;
+			}
+		}
+
+		public static IEnumerable<FieldInfo> GetAllFieldsWithAttribute<T>(Type type) where T : Attribute
+		{
+			var fields = ReflectionUtils.GetFields(type);
+			foreach (var field in fields)
+			{
+				var attr = field.GetAttribute<T>();
+				if (attr == null)
+					continue;
+
+				yield return field;
 			}
 		}
 

@@ -221,5 +221,18 @@ namespace Nez.Sprites
 		}
 
 		#endregion
+
+		#region Inspector methods
+		[InspectorCallable]
+		public void NextFrame()
+		{
+			if(CurrentAnimation != null)
+			{
+				CurrentFrame = (CurrentFrame + 1) % CurrentAnimation.Sprites.Length;
+				Sprite = CurrentAnimation.Sprites[CurrentFrame];
+			}
+		}
+
+		#endregion
 	}
 }

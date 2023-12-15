@@ -29,6 +29,16 @@ namespace Nez
 	}
 
 	/// <summary>
+	/// Adding this to a non-component object with a System.Serializable attribute will allow you to serialize the object to a file
+	/// from the inspector
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Field)]
+	public class InspectorSerializableAttribute : Attribute
+	{
+
+	}
+
+	/// <summary>
 	/// displays a tooltip when hovering over the label of any inspectable elements
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Method)]
