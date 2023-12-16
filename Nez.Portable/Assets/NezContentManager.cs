@@ -80,7 +80,6 @@ namespace Nez.Systems
 				content = (string)result;
 			else
 			{
-				path = Path.Combine(RootDirectory, path);
 				content = File.ReadAllText(path);
 				LoadedAssets.Add(path, content);
 			}
