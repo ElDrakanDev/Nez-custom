@@ -187,8 +187,14 @@ namespace Nez.Sprites
 
 		public override void Render(Batcher batcher, Camera camera)
 		{
+			Vector2 scale = new Vector2(System.Math.Abs(Entity.Transform.Scale.X), System.Math.Abs(Entity.Transform.Scale.Y));
+			SpriteEffects effects = SpriteEffects;
+			if(Entity.Transform.Scale.X < 0)
+				effects |= SpriteEffects.FlipHorizontally;
+			if(Entity.Transform.Scale.Y < 0)
+				effects |= SpriteEffects.FlipVertically;
 			batcher.Draw(Sprite, Entity.Transform.Position + LocalOffset, Color,
-				Entity.Transform.Rotation, Origin, Entity.Transform.Scale, SpriteEffects, _layerDepth);
+				Entity.Transform.Rotation, Origin, scale, effects, _layerDepth);
 		}
 	}
 }

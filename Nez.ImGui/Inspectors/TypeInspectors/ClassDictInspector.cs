@@ -1,12 +1,7 @@
 ﻿using ImGuiNET;
-using Nez.IEnumerableExtensions;
-using Nez.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nez.ImGuiTools.TypeInspectors
 {
@@ -42,6 +37,20 @@ namespace Nez.ImGuiTools.TypeInspectors
 
 		public override void DrawMutable()
 		{
+			foreach(var key in _dict.Keys)
+			{
+				if(_valueInspectors.ContainsKey(key.ToString()) is false)
+				{
+					var valueInspector = TypeInspectorUtils.GetInspectorForType(_dictValueType, _dict[key], null);
+					valueInspector.SetTarget(_dict[key], _dict.GetType().GetMethod("get_Item"), _dictValueType, "Value");
+					valueInspector.SetGetter((obj) => _dict[key], "Value");
+					valueInspector.SetSetter(obj => _modifiedValues.Add(key, obj));
+					valueInspector.Initialize();
+					_valueInspectors.Add(key.ToString(), valueInspector);
+				}
+			}
+
+			_dict = GetValue<IDictionary>();
 			foreach (var obj in _toRemove)
 			{
 				_dict.Remove(obj);
@@ -66,11 +75,6 @@ namespace Nez.ImGuiTools.TypeInspectors
 					_keyCreateInspector.SetGetter((obj) => _keyToCreate, "Key");
 					_keyCreateInspector.SetSetter(obj => _keyToCreate = obj);
 					_keyCreateInspector.Initialize();
-					//_valueCreateInspector = TypeInspectorUtils.GetInspectorForType(_dictValueType, _valueToCreate, null);
-					//_valueCreateInspector.SetTarget(_valueToCreate, _dict.GetType().GetMethod("get_Item"), _dictValueType);
-					//_valueCreateInspector.SetGetter((obj) => _valueToCreate, "Value");
-					//_valueCreateInspector.SetSetter(obj => _valueToCreate = obj);
-					//_valueCreateInspector.Initialize();
 					ImGui.OpenPopup("Add new key");
 				}
 
@@ -95,15 +99,6 @@ namespace Nez.ImGuiTools.TypeInspectors
 					{
 						var emptyVal = _dictValueType == typeof(string) ? "value" : Activator.CreateInstance(_dictValueType);
 						_dict.Add(_keyToCreate, emptyVal);
-						//_keyCreateInspector.SetTarget(_keyToCreate, _dict.GetType().GetMethod("get_Item"), _dictKeyType, "Key");
-						//_keyCreateInspector.SetGetter((obj) => _keyToCreate, _keyToCreate.ToString());
-						//_keyCreateInspector.Initialize();
-						var valueInspector = TypeInspectorUtils.GetInspectorForType(_dictValueType, emptyVal, null);
-						valueInspector.SetTarget(_dict[_keyToCreate], _dict.GetType().GetMethod("get_Item"), _dictValueType, "Value");
-						valueInspector.SetGetter((obj) => _dict[_keyToCreate], "Value");
-						valueInspector.SetSetter(obj => _modifiedValues.Add(_keyToCreate, obj));
-						valueInspector.Initialize();
-						_valueInspectors.Add(_keyToCreate.ToString(), valueInspector);
 						ImGui.CloseCurrentPopup();
 					}
 
@@ -125,12 +120,11 @@ namespace Nez.ImGuiTools.TypeInspectors
 				}
 
 				ImGui.PushItemWidth(-ImGui.GetStyle().IndentSpacing);
-				foreach (var key in _dict.Keys)
+				foreach (var key in _valueInspectors.Keys)
 				{
 					if (ImGui.CollapsingHeader(key.ToString()))
 					{
 						ImGui.Indent();
-						// _keyInspectors[key].Draw();
 						_valueInspectors[key.ToString()].Draw();
 
 						if(ImGui.Button("Remove element"))
