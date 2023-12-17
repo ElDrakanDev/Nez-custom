@@ -1,6 +1,7 @@
 ﻿using Nez.Textures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System;
 
 
 namespace Nez.Sprites
@@ -17,9 +18,21 @@ namespace Nez.Sprites
 				if (_areBoundsDirty)
 				{
 					if (_sprite != null)
+					{
 						_bounds.CalculateBounds(Entity.Transform.Position, _localOffset, _origin,
 							Entity.Transform.Scale, Entity.Transform.Rotation, _sprite.SourceRect.Width,
 							_sprite.SourceRect.Height);
+						if(_bounds.Left > _bounds.Right)
+						{
+							_bounds.Width = -_bounds.Width;
+							_bounds.X -= _bounds.Width;
+						}
+						if (_bounds.Top > _bounds.Bottom)
+						{
+							_bounds.Height = -_bounds.Height;
+							_bounds.Y -= _bounds.Height;
+						}
+					}
 					_areBoundsDirty = false;
 				}
 
