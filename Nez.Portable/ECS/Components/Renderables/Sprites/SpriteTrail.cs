@@ -88,7 +88,13 @@ namespace Nez.Sprites
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public void Render(Batcher batcher, Camera camera)
 			{
-				batcher.Draw(_sprite, Position, _renderColor, _rotation, _origin, _scale, _spriteEffects,
+				Vector2 scale = new Vector2(Math.Abs(_scale.X), Math.Abs(_scale.Y));
+				SpriteEffects effects = _spriteEffects;
+				if (_scale.X < 0)
+					effects |= SpriteEffects.FlipHorizontally;
+				if (_scale.Y < 0)
+					effects |= SpriteEffects.FlipVertically;
+				batcher.Draw(_sprite, Position, _renderColor, _rotation, _origin, scale, effects,
 					_layerDepth);
 			}
 		}
