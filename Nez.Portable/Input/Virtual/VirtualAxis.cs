@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
+using Nez.UI;
 
 
 namespace Nez
@@ -206,22 +207,52 @@ namespace Nez
 			}
 		}
 
+		public class GamePadButtons : Node
+		{
+			public int GamepadIndex;
+			Buttons Positive;
+			Buttons Negative;
+			public bool Invert = false;
+
+			public GamePadButtons(Buttons negative, Buttons positive, int gamepadIndex = 0, bool invert = false)
+			{
+				GamepadIndex = gamepadIndex;
+				Positive = positive;
+				Negative = negative;
+				Invert = invert;
+			}
+
+			public override float Value
+			{
+				get
+				{
+					var left = Input.GamePads[GamepadIndex].IsButtonDown(Negative) ? 1 : 0;
+					var right = Input.GamePads[GamepadIndex].IsButtonDown(Positive) ? 1 : 0;
+					var result = right - left;
+					if (Invert)
+						return -result;
+					return result;
+				}
+			}
+		}
 
 		public class KeyboardKeys : Node
 		{
 			public OverlapBehavior OverlapBehavior;
 			public Keys Positive;
 			public Keys Negative;
+			public bool Invert = false;
 
 			float _value;
 			bool _turned;
 
 
-			public KeyboardKeys(OverlapBehavior overlapBehavior, Keys negative, Keys positive)
+			public KeyboardKeys(OverlapBehavior overlapBehavior, Keys negative, Keys positive, bool invert = false)
 			{
 				OverlapBehavior = overlapBehavior;
 				Negative = negative;
 				Positive = positive;
+				Invert = invert;
 			}
 
 
@@ -277,7 +308,7 @@ namespace Nez
 			}
 
 
-			public override float Value => _value;
+			public override float Value => Invert ? -_value : _value;
 		}
 
 		#endregion
