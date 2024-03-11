@@ -1,4 +1,9 @@
 using ImGuiNET;
+using System.Reflection;
+using System.Linq;
+using Nez.ImGuiTools.ObjectInspectors;
+using System;
+using System.Collections.Generic;
 
 namespace Nez.ImGuiTools.SceneGraphPanes
 {
@@ -9,6 +14,24 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 		/// </summary>
 		const int MIN_ENTITIES_FOR_CLIPPER = 100;
 		string _newEntityName = "";
+		MethodInfo[] _listExtensionMethods;
+
+		public EntityPane()
+		{
+			var methods = new List<MethodInfo>();
+			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+			foreach (var assembly in assemblies)
+			{
+				methods.AddRange(
+					assembly.GetTypes()
+						  .SelectMany(t => t.GetMethods(BindingFlags.Public	| BindingFlags.NonPublic | BindingFlags.Static))
+						  .Where(m => m.GetCustomAttributes(typeof(InspectorEntityListExtension), false).Length > 0)
+				);
+			}
+
+			_listExtensionMethods = methods.ToArray();
+		}
 
 		unsafe public void Draw()
 		{
@@ -38,6 +61,9 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 			}
 
 			DrawCreateEntityPopup();
+
+			foreach (var method in _listExtensionMethods)
+				method.Invoke(method.DeclaringType, null);
 		}
 
 		void DrawEntity(Entity entity, bool onlyDrawRoots = true)
