@@ -15,7 +15,8 @@ namespace Nez
 			Pixel,
 			BitmapFontText,
 			SpriteFontText,
-			ConsoleText
+			ConsoleText,
+			Circle
 		}
 
 		// used for Line items
@@ -38,8 +39,17 @@ namespace Nez
 		public Color Color;
 		public float Duration;
 
+		public float Radius;
 		internal DebugDrawType drawType;
 
+		public DebugDrawItem(Vector2 position, float radius, Color color, float duration)
+		{
+			Position = position;
+			Color = color;
+			Duration = duration;
+			Radius = radius;
+			drawType = DebugDrawType.Circle;
+		}
 
 		public DebugDrawItem(Vector2 start, Vector2 end, Color color, float duration)
 		{
@@ -135,6 +145,22 @@ namespace Nez
 				case DebugDrawType.ConsoleText:
 					batcher.DrawString(BitmapFont, Text, Position, Color, 0f, Vector2.Zero, Scale,
 						SpriteEffects.None, 0f);
+					break;
+				case DebugDrawType.Circle:
+					try
+					{
+						var tex = Core.Content.LoadTexture("Content/Textures/debug_circle.png");
+						batcher.Draw(tex, new Rectangle(
+							Mathf.RoundToInt(Position.X - Radius),
+							Mathf.RoundToInt(Position.Y - Radius),
+							Mathf.RoundToInt(Radius * 2),
+							Mathf.RoundToInt(Radius * 2)), Color);
+						batcher.DrawLine(Position.X, Position.Y, Position.X + Radius, Position.Y, Color);
+					}
+					catch(Exception ex)
+					{
+						Debug.Warn($"Couldnt load debug circle. {ex}");
+					}
 					break;
 			}
 

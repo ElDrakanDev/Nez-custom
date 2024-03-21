@@ -61,6 +61,15 @@ namespace Nez
 		}
 
 		[Conditional("DEBUG")]
+		public static void DrawCircle(Vector2 position, Color color, float radius, float duration = 0f)
+		{
+			if (!Core.DebugRenderEnabled)
+				return;
+
+			_debugDrawItems.Add(new DebugDrawItem(position, radius, color, duration));
+		}
+
+		[Conditional("DEBUG")]
 		public static void DrawLine(Vector2 start, Vector2 end, Color color, float duration = 0f)
 		{
 			if (!Core.DebugRenderEnabled)
