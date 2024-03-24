@@ -332,6 +332,47 @@ namespace Nez.Systems
 			return effect;
 		}
 
+		public byte[] LoadEffectBytes(string path)
+		{
+#if FNA
+			path = path.Replace(".mgfxo", ".fxb");
+#endif
+			return LoadBytes(path);
+		}
+
+		public byte[] LoadBytes(string path)
+		{
+			byte[] bytes;
+			try
+			{
+				using (var stream = TitleContainer.OpenStream(path))
+				{
+					if (stream.CanSeek)
+					{
+						bytes = new byte[stream.Length];
+						stream.Read(bytes, 0, bytes.Length);
+					}
+					else
+					{
+						using (var ms = new MemoryStream())
+						{
+							stream.CopyTo(ms);
+							bytes = ms.ToArray();
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				var txt = string.Format(
+					"OpenStream failed to find file at path: {0}. Did you add it to the Content folder and set its properties to copy to output directory?",
+					path);
+				throw new Exception(txt, e);
+			}
+
+			return bytes;
+		}
+
 		#endregion
 
 		/// <summary>
