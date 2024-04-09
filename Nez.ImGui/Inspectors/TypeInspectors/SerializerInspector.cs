@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System;
 using System.IO;
+using System.Diagnostics;
 using Nez.Persistence;
 using Nez.Persistence.Binary;
 
@@ -60,6 +61,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 				Directory.CreateDirectory(Directory.GetParent(_savePath).FullName);
 				File.WriteAllText(_savePath, objAsJson);
 				Debug.Log($"Succesfully saved JSON at '{_savePath}'");
+				Process.Start(Directory.GetParent(_savePath).FullName);
 			}
 			catch (Exception ex)
 			{
@@ -75,6 +77,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 				Directory.CreateDirectory(Directory.GetParent(_savePath).FullName);
 				File.WriteAllText(_savePath, objAsNson);
 				Debug.Log($"Succesfully saved NSON at '{_savePath}'");
+				Process.Start(Directory.GetParent(_savePath).FullName);
 			}
 			catch (Exception ex)
 			{
@@ -92,6 +95,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 					var writer = new BinaryPersistableWriter(fs);
 					writer.Write(GetValue<IPersistable>());
 					Debug.Log($"Succesfully saved Binary at '{_savePath}'");
+					Process.Start(Directory.GetParent(_savePath).FullName);
 				}
 			}
 			catch (Exception ex)

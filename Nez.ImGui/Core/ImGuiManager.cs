@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Nez.ImGuiTools.Windows;
 using Num = System.Numerics;
 
 
@@ -25,6 +27,8 @@ namespace Nez.ImGuiTools
 
 		List<Type> _sceneSubclasses = new List<Type>();
 		System.Reflection.MethodInfo[] _themes;
+
+		List<Window> _windowSubclasses;
 
 		CoreWindow _coreWindow = new CoreWindow();
 		SceneGraphWindow _sceneGraphWindow = new SceneGraphWindow();
@@ -70,6 +74,9 @@ namespace Nez.ImGuiTools
 			// find all themes
 			_themes = typeof(NezImGuiThemes).GetMethods(System.Reflection.BindingFlags.Static |
 			                                            System.Reflection.BindingFlags.Public);
+
+			var windowTypes = ReflectionUtils.GetAllSubclasses(typeof(Window), true);
+			_windowSubclasses = windowTypes.Select(type => (Window)Activator.CreateInstance(type)).ToList();
 		}
 
 		/// <summary>
@@ -103,6 +110,15 @@ namespace Nez.ImGuiTools
 			{
 				ImGui.Begin("Style Editor", ref ShowStyleEditor);
 				ImGui.ShowStyleEditor();
+				ImGui.End();
+			}
+
+			foreach(var window in _windowSubclasses)
+			{
+				if (window.IsActive is false) continue;
+				ImGui.SetNextWindowSize(window.Size, ImGuiCond.Once);
+				ImGui.Begin(window.Title, ref window.IsActive);
+				window.Show();
 				ImGui.End();
 			}
 		}
@@ -198,6 +214,8 @@ namespace Nez.ImGuiTools
 						var startInfo = new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true };
 						System.Diagnostics.Process.Start(startInfo);
 					}
+					foreach(var window in _windowSubclasses)
+						ImGui.MenuItem(window.Title, null, ref window.IsActive);
 
 					ImGui.Separator();
 					ImGui.MenuItem("Core Window", null, ref ShowCoreWindow);

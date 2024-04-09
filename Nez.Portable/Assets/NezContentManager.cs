@@ -15,7 +15,9 @@ using Nez.Tiled;
 using Microsoft.Xna.Framework.Audio;
 using Nez.BitmapFonts;
 using Nez.Aseprite;
-
+using System.Xml.Linq;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Nez.Systems
 {
@@ -71,38 +73,41 @@ namespace Nez.Systems
 		#region Strongly Typed Loaders
 
 		/// <summary>
-		/// Loads the json file. Note that it only caches the file content, not the returned instance.
+		/// Load json file as T
 		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public T LoadJson<T>(string path)
 		{
-			string content;
-			if(LoadedAssets.TryGetValue(path, out var result))
-				content = (string)result;
+			if (LoadedAssets.TryGetValue(path, out var result) && result is T obj)
+				return obj;
 			else
 			{
-				content = File.ReadAllText(path);
-				LoadedAssets.Add(path, content);
+				var content = File.ReadAllText(path);
+				obj = JsonDecoder.FromJson<T>(content);
+				LoadedAssets.Add(path, obj);
+				return obj;
 			}
-			T obj = JsonDecoder.FromJson<T>(content);
-			return obj;
 		}
 
 		/// <summary>
-		/// Loads the nson file. Note that it only caches the file content, not the returned instance.
+		/// Load Nson file as T
 		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public T LoadNson<T>(string path)
 		{
-			string content;
-			if (LoadedAssets.TryGetValue(path, out var result))
-				content = (string)result;
+			if (LoadedAssets.TryGetValue(path, out var result) && result is T obj)
+				return obj;
 			else
 			{
-				path = Path.Combine(RootDirectory, path);
-				content = File.ReadAllText(path);
-				LoadedAssets.Add(path, content);
+				var content = File.ReadAllText(path);
+				obj = NsonDecoder.FromNson<T>(content);
+				LoadedAssets.Add(path, obj);
+				return obj;
 			}
-			T obj = NsonDecoder.FromNson<T>(content);
-			return obj;
 		}
 
 		/// <summary>
@@ -256,6 +261,47 @@ namespace Nez.Systems
 			var asepriteFile = AsepriteFileLoader.Load(name);
 			LoadedAssets.Add(name, asepriteFile);
 			return asepriteFile;
+		}
+
+		/// <summary>
+		/// Load Xml Document
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public XDocument LoadXml(string name)
+		{
+			if (LoadedAssets.TryGetValue(name, out var asset))
+			{
+				if (asset is XDocument loaded)
+					return loaded;
+			}
+
+			var xdoc = XDocument.Load(name, LoadOptions.None);
+			LoadedAssets.Add(name, xdoc);
+			return xdoc;
+		}
+
+		/// <summary>
+		/// Load object of type T from the xml file
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public T LoadXml<T>(string name)
+		{
+			if (LoadedAssets.TryGetValue(name, out var asset))
+			{
+				if (asset is T loaded)
+					return loaded;
+			}
+
+			XmlSerializer serializer = new XmlSerializer(typeof(T));			
+			using (FileStream fs = File.OpenRead(name))
+			{
+				var t = (T)serializer.Deserialize(fs);
+				LoadedAssets.Add(name, t);
+				return t;
+			}
 		}
 
 		/// <summary>
