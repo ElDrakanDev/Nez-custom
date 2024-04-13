@@ -169,12 +169,18 @@ namespace Nez.ImGuiTools
 			}
 		}
 
-		List<string> GetFileSystemEntries(string fullName)
+		List<string> GetFileSystemEntries(string Name)
 		{
 			var files = new List<string>();
 			var dirs = new List<string>();
 
-			foreach (var fse in Directory.GetFileSystemEntries(fullName))
+			string[] entries;
+			if (CurrentFolder == RootFolder)
+				entries = Directory.GetFileSystemEntries(RootFolder);
+			else
+				entries = Directory.GetFileSystemEntries(Path.Combine(CurrentFolder, Name));
+
+			foreach (var fse in entries)
 			{
 				if (Directory.Exists(fse) && (!HideHiddenFolders || !Path.GetFileName(fse).StartsWith(".")))
 				{

@@ -366,7 +366,7 @@ namespace Nez.ImGuiTools
 			var isOpen = true;
 			if (ImGui.BeginPopupModal("new-atlas", ref isOpen, ImGuiWindowFlags.NoTitleBar))
 			{
-				var picker = FilePicker.GetFolderPicker(this, new DirectoryInfo(Environment.CurrentDirectory).Parent.FullName);
+				var picker = FilePicker.GetFolderPicker(this, new DirectoryInfo(Environment.CurrentDirectory).Parent.Name);
 				picker.DontAllowTraverselBeyondRootFolder = false;
 				if (picker.Draw())
 				{

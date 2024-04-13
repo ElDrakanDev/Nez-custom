@@ -58,10 +58,10 @@ namespace Nez.ImGuiTools.TypeInspectors
 			try
 			{
 				string objAsJson = JsonEncoder.ToJson(GetValue(), new JsonSettings());
-				Directory.CreateDirectory(Directory.GetParent(_savePath).FullName);
+				Directory.CreateDirectory(Directory.GetParent(_savePath).Name);
 				File.WriteAllText(_savePath, objAsJson);
 				Debug.Log($"Succesfully saved JSON at '{_savePath}'");
-				Process.Start(Directory.GetParent(_savePath).FullName);
+				Process.Start(Directory.GetParent(_savePath).Name);
 			}
 			catch (Exception ex)
 			{
@@ -74,10 +74,10 @@ namespace Nez.ImGuiTools.TypeInspectors
 			try
 			{
 				string objAsNson = NsonEncoder.ToNson(GetValue(), new NsonSettings());
-				Directory.CreateDirectory(Directory.GetParent(_savePath).FullName);
+				Directory.CreateDirectory(Directory.GetParent(_savePath).Name);
 				File.WriteAllText(_savePath, objAsNson);
 				Debug.Log($"Succesfully saved NSON at '{_savePath}'");
-				Process.Start(Directory.GetParent(_savePath).FullName);
+				Process.Start(Directory.GetParent(_savePath).Name);
 			}
 			catch (Exception ex)
 			{
@@ -89,13 +89,13 @@ namespace Nez.ImGuiTools.TypeInspectors
 		{
 			try
 			{
-				Directory.CreateDirectory(Directory.GetParent(_savePath).FullName);
+				Directory.CreateDirectory(Directory.GetParent(_savePath).Name);
 				using (FileStream fs = File.Create(_savePath))
 				{
 					var writer = new BinaryPersistableWriter(fs);
 					writer.Write(GetValue<IPersistable>());
 					Debug.Log($"Succesfully saved Binary at '{_savePath}'");
-					Process.Start(Directory.GetParent(_savePath).FullName);
+					Process.Start(Directory.GetParent(_savePath).Name);
 				}
 			}
 			catch (Exception ex)
