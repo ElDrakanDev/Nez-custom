@@ -56,9 +56,13 @@ namespace Nez.ImGuiTools.TypeInspectors
 
 		void InspectColor()
 		{
+			ImGui.Text(_name);
+			ImGui.SameLine();
 			var value = GetValue<Color>().ToNumerics();
-			if (ImGui.ColorEdit4(_name, ref value))
+			ImGui.PushItemWidth(100);
+			if (ImGui.ColorPicker4(_name, ref value, ImGuiColorEditFlags.NoLabel))
 				SetValue(value.ToXNAColor());
+			ImGui.PopItemWidth();
 		}
 
 		/// <summary>

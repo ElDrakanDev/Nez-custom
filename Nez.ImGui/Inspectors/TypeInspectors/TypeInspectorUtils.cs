@@ -190,6 +190,8 @@ namespace Nez.ImGuiTools.TypeInspectors
 			    ListInspector.KSupportedTypes.Contains(valueType.GetGenericArguments()[0]))
 				return new TI.ListInspector();
 			// Custom inspectors
+			if(TI.TextureInspector.KSupportedTypes.Contains(valueType))
+				return new TI.TextureInspector();
 			if (valueType.IsGenericType && iListType.IsAssignableFrom(valueType)
 				&& valueType.GetInterface(nameof(IList)) != null
 				&& valueType.GetGenericArguments()[0].IsClass)
