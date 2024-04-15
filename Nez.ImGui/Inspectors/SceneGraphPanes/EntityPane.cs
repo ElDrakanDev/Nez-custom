@@ -186,6 +186,7 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 				}
 
 				ImGui.PopStyleColor();
+				ImGui.EndPopup();
 			}
 		}
 	}
