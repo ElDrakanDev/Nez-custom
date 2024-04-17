@@ -169,6 +169,8 @@ namespace Nez.ImGuiTools.TypeInspectors
 		/// <param name="memberInfo">Member info.</param>
 		public static AbstractTypeInspector GetInspectorForType(Type valueType, object target, MemberInfo memberInfo)
 		{
+			if (BitmaskInspector.IsValidTypeForInspector(valueType))
+				return new BitmaskInspector();
 			// built-in types
 			if (SimpleTypeInspector.KSupportedTypes.Contains(valueType))
 				return new TI.SimpleTypeInspector();

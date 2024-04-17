@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Nez.Textures;
 using System;
-using System.CodeDom;
 using System.IO;
 
 namespace Nez.ImGuiTools.TypeInspectors
