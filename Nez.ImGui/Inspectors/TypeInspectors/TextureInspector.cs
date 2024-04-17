@@ -12,6 +12,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 		IntPtr _currentPtr;
 		Texture2D _cachedTexture;
 		string _texPath = string.Empty;
+		public event Action<string> OnTexturePicked;
 
 		/// <summary>
 		/// If texture was changed outside editor, this will update our pointers
@@ -85,6 +86,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 						else
 							SetValue(newTex);
 						_currentPtr = imguiManager.BindTexture(newTex);
+						OnTexturePicked?.Invoke(_texPath.Replace(Environment.CurrentDirectory + Path.DirectorySeparatorChar, ""));
 					}
 					catch (Exception ex)
 					{
