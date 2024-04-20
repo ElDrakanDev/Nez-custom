@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections;
+using System.Collections.Generic;
 using Nez.Systems;
 using Nez.Console;
 using Nez.Tweens;
@@ -433,6 +434,23 @@ namespace Nez
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// gets all global managers of type T
+		/// </summary>
+		/// <returns>Found global managers.</returns>
+		/// <typeparam name="T">The 1st type parameter.</typeparam>
+		public static List<T> GetGlobalManagers<T>() where T : class
+		{
+			var found = new List<T>();
+			for (var i = 0; i < _instance._globalManagers.Length; i++)
+			{
+				if (_instance._globalManagers.Buffer[i] is T manager)
+					found.Add(manager);
+			}
+
+			return found;
 		}
 
 		#endregion

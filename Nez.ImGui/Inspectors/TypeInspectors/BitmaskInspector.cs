@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Nez.ImGuiTools.TypeInspectors
 {
+	// TODO: Change to Enum type instead of int type
 	public class BitmaskInspector : AbstractTypeInspector
 	{
 		public struct BitmaskSelectable
@@ -25,16 +26,15 @@ namespace Nez.ImGuiTools.TypeInspectors
 
 		public static bool IsValidTypeForInspector(Type t)
 		{
-			return t == typeof(int) && t.GetAttribute<BitmaskInspectableAttribute>() != null;
+			return t.IsEnum && t.GetAttribute<FlagsAttribute>() != null;
 		}
 
 		public override void Initialize()
 		{
 			base.Initialize();
-			Type enumType = _memberInfo.GetAttribute<BitmaskInspectableAttribute>().FlagType;
-			var names = Enum.GetNames(enumType);
+			var names = Enum.GetNames(_valueType);
 
-			_selectOptions = names.Select(name => new BitmaskSelectable(name, (int)Enum.Parse(enumType, name))).ToArray();
+			_selectOptions = names.Select(name => new BitmaskSelectable(name, (int)Enum.Parse(_valueType, name))).ToArray();
 			_allSelectedValue = _selectOptions.Sum(x => x.FlagValue);
 		}
 
@@ -54,7 +54,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 
 		public override void DrawMutable()
 		{
-			var bitmask = GetValue<int>();
+			var bitmask = (int)GetValue();
 
 			if(ImGui.BeginCombo(_name, GetPreview()))
 			{
@@ -68,7 +68,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 					if (ImGui.Selectable(option.Name, false, ImGuiSelectableFlags.DontClosePopups))
 					{
 						bitmask ^= option.FlagValue;
-						SetValue(bitmask);
+						SetValue(Enum.ToObject(_valueType, bitmask));
 					}
 
 					if(isSet)
