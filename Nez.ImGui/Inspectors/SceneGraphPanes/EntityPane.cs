@@ -15,22 +15,40 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 		const int MIN_ENTITIES_FOR_CLIPPER = 100;
 		string _newEntityName = "";
 		MethodInfo[] _listExtensionMethods;
+		MethodInfo[] _entityContextMethods;
 
 		public EntityPane()
 		{
-			var methods = new List<MethodInfo>();
+			var listExtensionMethods = new List<MethodInfo>();
+			var entityContextMethods = new List<MethodInfo>();
 			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
 			foreach (var assembly in assemblies)
 			{
-				methods.AddRange(
+				listExtensionMethods.AddRange(
 					assembly.GetTypes()
-						  .SelectMany(t => t.GetMethods(BindingFlags.Public	| BindingFlags.NonPublic | BindingFlags.Static))
-						  .Where(m => m.GetCustomAttributes(typeof(InspectorEntityListExtension), false).Length > 0)
+						.SelectMany(t => t.GetMethods(BindingFlags.Public	| BindingFlags.NonPublic | BindingFlags.Static))
+						.Where(m => m.GetCustomAttributes(typeof(InspectorEntityListExtension), false).Length > 0)
+				);
+				entityContextMethods.AddRange(
+					assembly.GetTypes()
+						.SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+						.Where(m => m.GetCustomAttributes(typeof(InspectorEntityContextMenu), false).Length > 0
+							&& (
+								m.GetParameters().FirstOrDefault().ParameterType == typeof(Entity)
+								|| m.GetParameters().FirstOrDefault().ParameterType.IsSubclassOf(typeof(Entity))
+							)
+						)
 				);
 			}
 
-			_listExtensionMethods = methods.ToArray();
+			_listExtensionMethods = listExtensionMethods.ToArray();
+			_entityContextMethods = entityContextMethods.ToArray();
+
+			Insist.IsFalse(
+				_entityContextMethods.Select(
+					m => m.GetAttribute<InspectorEntityContextMenu>().Name.Replace(" ", "-")
+				).ToHashSet().Count < _entityContextMethods.Length);
 		}
 
 		unsafe public void Draw()
@@ -152,6 +170,29 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 					ImGui.PopStyleColor();
 
 					ImGui.EndPopup();
+				}
+
+				foreach(var method in _entityContextMethods)
+				{
+					var attr = method.GetAttribute<InspectorEntityContextMenu>();
+					var selectableName = attr.Name;
+
+					if (attr.IsPopup)
+					{
+						var id = $"{method.Name}-{selectableName.Replace(" ", "")}";
+						if (ImGui.Selectable(selectableName, false, ImGuiSelectableFlags.DontClosePopups))
+							ImGui.OpenPopup(id);
+						if (ImGui.BeginPopup(id))
+						{
+							method.Invoke(null, new object[]{entity});
+							ImGui.EndPopup();
+						}
+					}
+					else
+					{
+						if (ImGui.Selectable(selectableName))
+							method.Invoke(null, new object[] { entity });
+					}
 				}
 
 				ImGui.EndPopup();
