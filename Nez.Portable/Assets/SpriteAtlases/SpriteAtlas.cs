@@ -5,6 +5,7 @@ namespace Nez.Sprites
 {
 	public class SpriteAtlas : IDisposable
 	{
+		public string AtlasPath;
 		public string[] Names;
 		public Sprite[] Sprites;
 

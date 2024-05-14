@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
+using Microsoft.Xna.Framework;
 
 namespace Nez.Persistence
 {
@@ -48,7 +49,8 @@ namespace Nez.Persistence
 			Number,
 			True,
 			False,
-			Null
+			Null,
+			Color
 		}
 
         string _lastToken;
@@ -246,6 +248,8 @@ namespace Nez.Persistence
 					return Token.String;
 				case ':':
 					return Token.Colon;
+				case '#':
+					return Token.Color;
 				case '0':
 				case '1':
 				case '2':
@@ -453,6 +457,8 @@ namespace Nez.Persistence
 				case Token.OpenBracket:
 					// Array, MultiRank Array or a List
 					return DecodeArrayOrList(type);
+				case Token.Color:
+					return DecodeColor(GetNextWord());
 				case Token.True:
 					return true;
 				case Token.False:
@@ -484,6 +490,8 @@ namespace Nez.Persistence
 					return DecodeDictionary(typeof(Dictionary<string, object>));
 				case Token.OpenBracket:
 					return DecodeArrayOrList(typeof(List<object>));
+				case Token.Color:
+					return DecodeColor(GetNextWord());
 				case Token.True:
 					return true;
 				case Token.False:
@@ -531,6 +539,15 @@ namespace Nez.Persistence
 			var converter = _settings?.GetTypeConverterForType(obj.GetType());
 			if (converter != null && converter.CanRead)
 				converter.OnFoundCustomData(ref obj, key, orhpanedValue);
+		}
+
+		Color DecodeColor(string word)
+		{
+			byte r = byte.Parse(word.Substring(1, 2), NumberStyles.HexNumber);
+			byte g = byte.Parse(word.Substring(3, 2), NumberStyles.HexNumber);
+			byte b = byte.Parse(word.Substring(5, 2), NumberStyles.HexNumber);
+			byte a = byte.Parse(word.Substring(7, 2), NumberStyles.HexNumber);
+			return new Color(r, g, b, a);
 		}
 
 		object DecodeArrayOrList(Type type, object obj = null)

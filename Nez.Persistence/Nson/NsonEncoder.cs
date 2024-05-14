@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -108,6 +109,10 @@ namespace Nez.Persistence
 				_builder.Append(Convert.ToString(value, CultureInfo.InvariantCulture));
 				return;
 			}
+			else if(value is Color)
+			{
+				EncodeColor((Color)value);
+			}
 			else
 			{
 				EncodeObject(value);
@@ -169,6 +174,19 @@ namespace Nez.Persistence
 
             if (!excludeQuotes)
                 _builder.Append('\"');
+		}
+
+		/// <summary>
+		/// Encodes a color to the nson stream
+		/// </summary>
+		/// <param name="color"></param>
+		public void EncodeColor(Color color)
+		{
+			_builder.Append("#");
+			_builder.Append(color.R.ToString("X2"));
+			_builder.Append(color.G.ToString("X2"));
+			_builder.Append(color.B.ToString("X2"));
+			_builder.Append(color.A.ToString("X2"));
 		}
 
 		/// <summary>

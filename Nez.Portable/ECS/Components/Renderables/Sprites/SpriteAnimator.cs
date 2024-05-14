@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nez.Persistence;
 using Nez.Textures;
 
 
@@ -8,6 +10,7 @@ namespace Nez.Sprites
 	/// <summary>
 	/// SpriteAnimator handles the display and animation of a sprite
 	/// </summary>
+	[System.Serializable]
 	public class SpriteAnimator : SpriteRenderer, IUpdatable
 	{
 		public enum LoopMode
@@ -59,12 +62,12 @@ namespace Nez.Sprites
 		/// <summary>
 		/// the current state of the animation
 		/// </summary>
-		public State AnimationState { get; private set; } = State.None;
+		[NsonExclude] public State AnimationState { get; private set; } = State.None;
 
 		/// <summary>
 		/// the current animation
 		/// </summary>
-		public SpriteAnimation CurrentAnimation { get; private set; }
+		[NsonExclude] public SpriteAnimation CurrentAnimation { get; private set; }
 
 		/// <summary>
 		/// the name of the current animation
@@ -74,7 +77,7 @@ namespace Nez.Sprites
 		/// <summary>
 		/// index of the current frame in sprite array of the current animation
 		/// </summary>
-		public int CurrentFrame { get; set; }
+		[NsonExclude] public int CurrentFrame { get; set; }
 
 		/// <summary>
 		/// checks to see if the CurrentAnimation is running
@@ -84,9 +87,14 @@ namespace Nez.Sprites
 		/// <summary>
 		/// Provides access to list of available animations
 		/// </summary>
-		public Dictionary<string, SpriteAnimation> Animations { get { return _animations; } }
+		[NsonExclude] public Dictionary<string, SpriteAnimation> Animations { get { return _animations; } }
 
-		readonly Dictionary<string, SpriteAnimation> _animations = new Dictionary<string, SpriteAnimation>();
+		[NsonExclude] Dictionary<string, SpriteAnimation> _animations = new Dictionary<string, SpriteAnimation>();
+
+		/// <summary>
+		/// The path of the atlas file. Automatically calls AddAnimationsFromAtlas if set when added to Entity
+		/// </summary>
+		public string AtlasPath;
 
 		float _elapsedTime;
 		LoopMode _loopMode;
@@ -96,6 +104,14 @@ namespace Nez.Sprites
 		{ }
 
 		public SpriteAnimator(Sprite sprite) => SetSprite(sprite);
+
+		public override void OnAddedToEntity()
+		{
+			if(!string.IsNullOrEmpty(AtlasPath) && Animations.Count == 0)
+				AddAnimationsFromAtlas(Entity.Scene.Content.LoadSpriteAtlas(AtlasPath));
+			if(Animations.Count == 1)
+				Play(Animations.Keys.First());
+		}
 
 		public virtual void Update()
 		{
@@ -152,8 +168,17 @@ namespace Nez.Sprites
 		/// </summary>
 		public SpriteAnimator AddAnimationsFromAtlas(SpriteAtlas atlas)
 		{
+			AtlasPath = atlas.AtlasPath;
+
 			for (var i = 0; i < atlas.AnimationNames.Length; i++)
+			{
+				if (_animations.ContainsKey(atlas.AnimationNames[i]))
+				{
+					Debug.Warn($"ATLAS '{AtlasPath}': Tried to add animation {atlas.AnimationNames[i]} but it already exists.");
+					continue;
+				}
 				_animations.Add(atlas.AnimationNames[i], atlas.SpriteAnimations[i]);
+			}
 			return this;
 		}
 
@@ -175,6 +200,15 @@ namespace Nez.Sprites
 		{
 			AddAnimation(name, new SpriteAnimation(sprites, fps));
 			return this;
+		}
+
+		public override Component Clone()
+		{
+			var anims = _animations;
+			_animations = new Dictionary<string, SpriteAnimation>(_animations);
+			var component = base.Clone();
+			_animations = anims;
+			return component;
 		}
 
 		#region Playback

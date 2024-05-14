@@ -13,6 +13,7 @@ namespace Nez.Persistence
 		internal const string RefPropertyName = "@ref";
 
 		internal static readonly Type includeAttrType = typeof(NsonIncludeAttribute);
+		internal static readonly Type excludeAttrType = typeof(NsonExcludeAttribute);
 		internal static readonly Type beforeEncodeAttrType = typeof(BeforeEncodeAttribute);
 
 		internal const BindingFlags instanceBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;

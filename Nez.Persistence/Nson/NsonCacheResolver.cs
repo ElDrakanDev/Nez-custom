@@ -30,6 +30,11 @@ namespace Nez.Persistence
 			{
 				if (NsonConstants.includeAttrType.IsInstanceOfType(attribute))
 					isPublic = true;
+				else if (NsonConstants.excludeAttrType.IsInstanceOfType(attribute))
+				{
+					isPublic = false;
+					break;
+				}
 			}
 
 			_memberInfoEncodeableCache[memberInfo] = isPublic;

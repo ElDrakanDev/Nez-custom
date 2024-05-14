@@ -216,6 +216,7 @@ namespace Nez.Systems
 			}
 
 			var atlas = SpriteAtlasLoader.ParseSpriteAtlas(name, premultiplyAlpha);
+			atlas.AtlasPath = name;
 
 			LoadedAssets.Add(name, atlas);
 			DisposableAssets.Add(atlas);

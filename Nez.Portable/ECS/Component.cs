@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nez.Persistence;
+using System;
 using System.Runtime.CompilerServices;
 
 
@@ -18,7 +19,7 @@ namespace Nez
 		/// <summary>
 		/// the Entity this Component is attached to
 		/// </summary>
-		public Entity Entity;
+		[NsonExclude] public Entity Entity;
 
 		/// <summary>
 		/// shortcut to entity.transform
