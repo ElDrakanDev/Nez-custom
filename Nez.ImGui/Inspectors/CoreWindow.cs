@@ -44,6 +44,7 @@ namespace Nez.ImGuiTools
 				ImGui.Checkbox("exitOnEscapeKeypress", ref Core.ExitOnEscapeKeypress);
 				ImGui.Checkbox("pauseOnFocusLost", ref Core.PauseOnFocusLost);
 				ImGui.Checkbox("debugRenderEnabled", ref Core.DebugRenderEnabled);
+				ImGui.DragFloat("TimeScale", ref Time.TimeScale);
 			}
 
 			if (ImGui.CollapsingHeader("Core.defaultSamplerState", ImGuiTreeNodeFlags.DefaultOpen))
