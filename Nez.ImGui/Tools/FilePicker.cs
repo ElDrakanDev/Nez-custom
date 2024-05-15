@@ -11,6 +11,7 @@ namespace Nez.ImGuiTools
 	{
 		static readonly Dictionary<object, FilePicker> _filePickers = new Dictionary<object, FilePicker>();
 
+		public bool WasCanceled;
 		public string RootFolder;
 		public string CurrentFolder;
 		public string SelectedFile;
@@ -80,6 +81,7 @@ namespace Nez.ImGuiTools
 		{
 			ImGui.Text("Current Folder: " + Path.GetFileName(RootFolder) + CurrentFolder.Replace(RootFolder, ""));
 			bool result = false;
+			WasCanceled = false;
 
 			if (ImGui.BeginChildFrame(1, new Num.Vector2(500, 400)))
 			{
@@ -128,6 +130,7 @@ namespace Nez.ImGuiTools
 			if (ImGui.Button("Cancel"))
 			{
 				result = false;
+				WasCanceled = true;
 				RemoveFilePicker(this);
 				ImGui.CloseCurrentPopup();
 			}
