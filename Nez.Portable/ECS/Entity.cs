@@ -56,7 +56,7 @@ namespace Nez
 		/// </summary>
 		public bool Enabled
 		{
-			get => _enabled;
+			get => _enabled && (Transform.Parent is null || Transform.Parent.Entity.Enabled);
 			set => SetEnabled(value);
 		}
 

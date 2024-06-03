@@ -42,6 +42,7 @@ namespace Nez.ImGuiTools.TypeInspectors
 				if(_valueInspectors.ContainsKey(key.ToString()) is false)
 				{
 					var valueInspector = TypeInspectorUtils.GetInspectorForType(_dictValueType, _dict[key], null);
+					if (valueInspector is null) continue;
 					valueInspector.SetTarget(_dict[key], _dict.GetType().GetMethod("get_Item"), _dictValueType, "Value");
 					valueInspector.SetGetter((obj) => _dict[key], "Value");
 					valueInspector.SetSetter(obj => _modifiedValues.Add(key, obj));

@@ -90,6 +90,8 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 				return;
 
 			ImGui.PushID((int) entity.Id);
+			if(entity.Enabled is false)
+				ImGui.PushStyleColor(ImGuiCol.Text, Microsoft.Xna.Framework.Color.Gray.ToVector4().ToNumerics());
 			bool treeNodeOpened;
 			if (entity.Transform.ChildCount > 0)
 			{
@@ -101,6 +103,9 @@ namespace Nez.ImGuiTools.SceneGraphPanes
 				treeNodeOpened = ImGui.TreeNodeEx($"{entity.Name} ({entity.Transform.ChildCount})###{entity.Id}",
 					ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.OpenOnArrow);
 			}
+
+			if (entity.Enabled is false)
+				ImGui.PopStyleColor();
 
 			NezImGui.ShowContextMenuTooltip();
 
