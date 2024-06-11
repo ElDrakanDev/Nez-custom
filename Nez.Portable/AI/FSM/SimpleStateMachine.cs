@@ -15,6 +15,8 @@ namespace Nez.AI.FSM
 	public abstract class SimpleStateMachine<TEnum> : Component, IUpdatable
 		where TEnum : struct, IComparable, IFormattable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		class StateMethodCache
 		{
 			public Action EnterState;

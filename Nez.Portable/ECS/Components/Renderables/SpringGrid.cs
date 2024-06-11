@@ -12,6 +12,8 @@ namespace Nez
 	/// </summary>
 	public class SpringGrid : RenderableComponent, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		#region internal classes
 
 		class PointMass

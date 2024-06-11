@@ -9,6 +9,8 @@ namespace Nez
 	/// </summary>
 	public class ArcadeRigidbody : Component, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		/// <summary>
 		/// mass of this rigidbody. A 0 mass will make this an immovable object.
 		/// </summary>

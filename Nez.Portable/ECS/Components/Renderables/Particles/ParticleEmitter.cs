@@ -8,6 +8,8 @@ namespace Nez.Particles
 {
 	public class ParticleEmitter : RenderableComponent, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		public override RectangleF Bounds => _bounds;
 
 		public bool IsPaused => _isPaused;

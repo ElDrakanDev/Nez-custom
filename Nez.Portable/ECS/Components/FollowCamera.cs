@@ -9,6 +9,8 @@ namespace Nez
 	/// </summary>
 	public class FollowCamera : Component, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		public enum CameraStyle
 		{
 			LockOn,

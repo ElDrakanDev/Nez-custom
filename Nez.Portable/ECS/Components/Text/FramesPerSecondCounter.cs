@@ -8,6 +8,8 @@ namespace Nez
 {
 	public class FramesPerSecondCounter : TextComponent, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		public enum FPSDockPosition
 		{
 			TopLeft,

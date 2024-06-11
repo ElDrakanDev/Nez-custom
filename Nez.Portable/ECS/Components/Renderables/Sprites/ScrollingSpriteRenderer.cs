@@ -11,6 +11,8 @@ namespace Nez.Sprites
 	/// </summary>
 	public class ScrollingSpriteRenderer : TiledSpriteRenderer, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		/// <summary>
 		/// x speed of automatic scrolling in pixels/s
 		/// </summary>

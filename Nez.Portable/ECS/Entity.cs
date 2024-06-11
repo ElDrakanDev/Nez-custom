@@ -389,7 +389,13 @@ namespace Nez
 		/// <summary>
 		/// called each frame as long as the Entity is enabled
 		/// </summary>
-		public virtual void Update() => Components.Update();
+		public virtual void Update()
+		{
+			if (Scene.Paused)
+				Components.UpdatePaused();
+			else
+				Components.Update();
+		}
 
 		/// <summary>
 		/// called if Core.debugRenderEnabled is true by the default renderers. Custom renderers can choose to call it or not.

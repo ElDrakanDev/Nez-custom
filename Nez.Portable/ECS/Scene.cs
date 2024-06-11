@@ -80,6 +80,7 @@ namespace Nez
 			BestFit
 		}
 
+		public bool Paused;
 
 		/// <summary>
 		/// default scene Camera

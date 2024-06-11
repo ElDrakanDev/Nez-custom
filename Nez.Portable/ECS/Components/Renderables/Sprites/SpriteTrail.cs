@@ -14,6 +14,8 @@ namespace Nez.Sprites
 	/// </summary>
 	public class SpriteTrail : RenderableComponent, IUpdatable
 	{
+		public bool UpdateOnPause { get; set; }
+
 		/// <summary>
 		/// helper class that houses the data required for the individual trail instances
 		/// </summary>
