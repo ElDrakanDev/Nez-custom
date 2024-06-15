@@ -593,6 +593,10 @@ namespace Nez.Spatial
 				if (!Flags.IsFlagSet(_layerMask, potential.PhysicsLayer))
 					continue;
 
+				// Don't register disabled colliders
+				if(potential.Enabled is false)
+					continue;
+
 				// TODO: is rayIntersects performant enough? profile it. Collisions.rectToLine might be faster
 				// TODO: if the bounds check returned more data we wouldnt have to do any more for a BoxCollider check
 				// first a bounds check before doing a shape test
