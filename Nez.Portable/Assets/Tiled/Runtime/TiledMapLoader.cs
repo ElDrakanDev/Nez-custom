@@ -47,7 +47,7 @@ namespace Nez.Tiled
 			map.BackgroundColor = ParseColor(xMap.Attribute("backgroundcolor"));
 
 			map.Properties = ParsePropertyDict(xMap.Element("properties"));
-
+			
 			// we keep a tally of the max tile size for the case of image tilesets with random sizes
 			map.MaxTileWidth = map.TileWidth;
 			map.MaxTileHeight = map.TileHeight;
