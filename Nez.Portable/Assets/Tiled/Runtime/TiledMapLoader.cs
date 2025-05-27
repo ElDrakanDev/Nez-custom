@@ -476,7 +476,14 @@ namespace Nez.Tiled
 				obj.ObjectType = TmxObjectType.Basic;
 			}
 
-			obj.Properties = ParsePropertyDict(xObject.Element("properties"));
+			if (obj.Properties is null)
+				obj.Properties = new Dictionary<string, string>();
+
+			var properties = ParsePropertyDict(xObject.Element("properties"));
+			if (properties != null) {
+				foreach (var key in properties.Keys)
+					obj.Properties[key] = properties[key];
+			}
 
 			return obj;
 		}

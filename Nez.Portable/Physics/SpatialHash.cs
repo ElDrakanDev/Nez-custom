@@ -246,7 +246,7 @@ namespace Nez.Spatial
 						var collider = cell[i];
 
 						// skip this collider if it is our excludeCollider or if it doesnt match our layerMask
-						if (collider == excludeCollider || !Flags.IsFlagSet(layerMask, collider.PhysicsLayer))
+						if (!collider.Enabled || collider == excludeCollider || !Flags.IsFlagSet(layerMask, collider.PhysicsLayer))
 							continue;
 
 						if (bounds.Intersects(collider.Bounds))
