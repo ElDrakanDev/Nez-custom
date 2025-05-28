@@ -326,7 +326,7 @@ namespace Nez
 		/// </summary>
 		/// <returns>The components of type.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public List<T> FindComponentsOfType<T>() where T : Component
+		public List<T> FindComponentsOfType<T>() where T : class
 		{
 			var comps = ListPool<T>.Obtain();
 			for (var i = 0; i < _entities.Length; i++)

@@ -1056,7 +1056,7 @@ namespace Nez
 		/// </summary>
 		/// <returns>The components of type.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public List<T> FindComponentsOfType<T>() where T : Component => Entities.FindComponentsOfType<T>();
+		public List<T> FindComponentsOfType<T>() where T : class => Entities.FindComponentsOfType<T>();
 
 		#endregion
 	}
