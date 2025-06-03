@@ -115,7 +115,7 @@ namespace Nez.Systems
 		/// extension or be preceded by "Content" in the path. png/jpg files should have the file extension and have an absolute
 		/// path or a path starting with "Content".
 		/// </summary>
-		public Texture2D LoadTexture(string name, bool premultiplyAlpha = false)
+		public Texture2D LoadTexture(string name, bool premultiplyAlpha = true)
 		{
 			// no file extension. Assumed to be an xnb so let ContentManager load it
 			if (string.IsNullOrEmpty(Path.GetExtension(name)))
@@ -207,7 +207,7 @@ namespace Nez.Systems
 		/// <summary>
 		/// Loads a SpriteAtlas created with the Sprite Atlas Packer tool
 		/// </summary>
-		public SpriteAtlas LoadSpriteAtlas(string name, bool premultiplyAlpha = false)
+		public SpriteAtlas LoadSpriteAtlas(string name, bool premultiplyAlpha = true)
 		{
 			if (LoadedAssets.TryGetValue(name, out var asset))
 			{
