@@ -73,7 +73,7 @@ namespace Nez.ParticleDesigner
 			config.EmissionRate = config.MaxParticles / config.ParticleLifespan;
 			if (float.IsInfinity(config.EmissionRate))
 			{
-				Debug.Error("---- particle system EmissionRate (MaxParticles / ParticleLifespace) is infinity. Resetting to 10000");
+				Debug.Error("---- particle system EmissionRate (MaxParticles / ParticleLifespan) is infinity. Resetting to 10000");
 				config.EmissionRate = 10000;
 			}
 
