@@ -17,6 +17,17 @@ namespace Nez
 		/// </summary>
 		public Scene Scene;
 
+
+		bool _updateOnPause = false;
+		/// <summary>
+		/// Update entity if scene is paused
+		/// </summary>
+		public bool UpdateOnPause
+		{
+			get => _updateOnPause && (Parent is null || Parent.Entity.UpdateOnPause);
+			set => _updateOnPause = value;
+		}
+
 		/// <summary>
 		/// entity name. useful for doing scene-wide searches for an entity
 		/// </summary>
@@ -345,6 +356,7 @@ namespace Nez
 			Tag = entity.Tag;
 			UpdateInterval = entity.UpdateInterval;
 			UpdateOrder = entity.UpdateOrder;
+			UpdateOnPause = entity.UpdateOnPause;
 			Enabled = entity.Enabled;
 
 			Transform.Scale = entity.Transform.Scale;
@@ -391,10 +403,9 @@ namespace Nez
 		/// </summary>
 		public virtual void Update()
 		{
-			if (Scene.Paused)
-				Components.UpdatePaused();
-			else
-				Components.Update();
+			if (Scene.Paused && !UpdateOnPause)
+				return;
+			Components.Update();
 		}
 
 		/// <summary>

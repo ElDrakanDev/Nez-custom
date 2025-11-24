@@ -13,8 +13,6 @@ namespace Nez.Sprites
 	[System.Serializable]
 	public class SpriteAnimator : SpriteRenderer, IUpdatable
 	{
-		public bool UpdateOnPause { get; set; }
-
 		public enum LoopMode
 		{
 			/// <summary>

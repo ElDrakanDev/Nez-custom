@@ -11,8 +11,6 @@ namespace Nez
 	/// </summary>
 	public class TrailRibbon : RenderableComponent, IUpdatable
 	{
-		public bool UpdateOnPause { get; set; }
-
 		public override RectangleF Bounds => _bounds;
 
 		/// <summary>

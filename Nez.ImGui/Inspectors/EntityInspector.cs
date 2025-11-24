@@ -66,6 +66,10 @@ namespace Nez.ImGuiTools
 				if (ImGui.Checkbox("Enabled", ref enabled))
 					Entity.Enabled = enabled;
 
+				var updateOnPause = Entity.UpdateOnPause;
+				if (ImGui.Checkbox("UpdateOnPause", ref updateOnPause))
+					Entity.UpdateOnPause = updateOnPause;
+
 				ImGui.InputText("Name", ref Entity.Name, 25);
 
 				var updateInterval = (int)Entity.UpdateInterval;

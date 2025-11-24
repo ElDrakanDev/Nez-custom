@@ -9,8 +9,6 @@ namespace Nez
 	/// </summary>
 	public class UICanvas : RenderableComponent, IUpdatable
 	{
-		public bool UpdateOnPause { get; set; }
-
 		public override float Width => Stage.GetWidth();
 
 		public override float Height => Stage.GetHeight();

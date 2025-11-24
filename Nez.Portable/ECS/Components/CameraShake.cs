@@ -6,8 +6,6 @@ namespace Nez
 {
 	public class CameraShake : Component, IUpdatable
 	{
-		public bool UpdateOnPause { get; set; }
-
 		Vector2 _shakeDirection;
 		Vector2 _shakeOffset;
 		float _shakeIntensity = 0f;

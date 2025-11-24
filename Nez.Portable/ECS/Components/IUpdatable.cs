@@ -9,7 +9,6 @@ namespace Nez
 	/// </summary>
 	public interface IUpdatable
 	{
-		bool UpdateOnPause { get; set; }
 		bool Enabled { get; }
 		int UpdateOrder { get; }
 

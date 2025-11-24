@@ -7,8 +7,6 @@ namespace Nez
 {
 	public class TiledMapRenderer : RenderableComponent, IUpdatable
 	{
-		public bool UpdateOnPause { get; set; }
-
 		public TmxMap TiledMap;
 
 		public int PhysicsLayer = 1 << 0;

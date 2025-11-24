@@ -275,17 +275,6 @@ namespace Nez
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void UpdatePaused()
-		{
-			UpdateLists();
-			for (var i = 0; i < _updatableComponents.Length; i++)
-			{
-				if (_updatableComponents.Buffer[i].Enabled && _updatableComponents.Buffer[i].UpdateOnPause && (_updatableComponents.Buffer[i] as Component).Enabled)
-					_updatableComponents.Buffer[i].Update();
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void OnEntityTransformChanged(Transform.Component comp)
 		{
 			for (var i = 0; i < _components.Length; i++)

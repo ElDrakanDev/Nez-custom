@@ -30,8 +30,6 @@ namespace Nez
 	/// </summary>
 	public class ColorCycler : Component, IUpdatable
 	{
-		public bool UpdateOnPause { get; set; }
-
 		public Colorchannels ColorChannel = Colorchannels.All;
 		public WaveFunctions WaveFunction = WaveFunctions.Sin;
 
