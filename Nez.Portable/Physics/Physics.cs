@@ -246,6 +246,16 @@ namespace Nez
 			return _spatialHash.AabbBroadphase(ref rect, null, layerMask);
 		}
 
+		/// <summary>
+		/// returns all colliders with bounds that are intersected by collider.bounds. Note that this is a broadphase check so it
+		/// only checks bounds and does not do individual Collider-to-Collider checks!
+		/// </summary>
+		/// <param name="bounds">Bounds.</param>
+		/// <param name="layerMask">Layer mask.</param>
+		public static HashSet<Collider> BoxcastBroadphase(ref RectangleF rect, HashSet<Collider> excluded, int layerMask = AllLayers)
+		{
+			return _spatialHash.AabbBroadphaseExcluding(ref rect, excluded, layerMask);
+		}
 
 		/// <summary>
 		/// returns all colliders with bounds that are intersected by collider.bounds excluding the passed-in collider (self)

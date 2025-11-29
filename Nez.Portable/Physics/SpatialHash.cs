@@ -258,6 +258,39 @@ namespace Nez.Spatial
 			return _tempHashset;
 		}
 
+		public HashSet<Collider> AabbBroadphaseExcluding(ref RectangleF bounds, HashSet<Collider> excluded, int layerMask)
+		{
+			_tempHashset.Clear();
+
+			var p1 = CellCoords(bounds.X, bounds.Y);
+			var p2 = CellCoords(bounds.Right, bounds.Bottom);
+
+			for (var x = p1.X; x <= p2.X; x++)
+			{
+				for (var y = p1.Y; y <= p2.Y; y++)
+				{
+					var cell = CellAtPosition(x, y);
+					if (cell == null)
+						continue;
+
+					// we have a cell. loop through and fetch all the Colliders
+					for (var i = 0; i < cell.Count; i++)
+					{
+						var collider = cell[i];
+
+						// skip this collider if it is our excludeCollider or if it doesnt match our layerMask
+						if (!collider.Enabled || excluded.Contains(collider) || !Flags.IsFlagSet(layerMask, collider.PhysicsLayer))
+							continue;
+
+						if (bounds.Intersects(collider.Bounds))
+							_tempHashset.Add(collider);
+					}
+				}
+			}
+
+			return _tempHashset;
+		}
+
 
 		/// <summary>
 		/// casts a line through the spatial hash and fills the hits array up with any colliders that the line hits.
