@@ -27,6 +27,26 @@ namespace Nez
 
 		public static IEnumerable<FieldInfo> GetFields(Type type) => type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
+		public static int GetHierarchyDistance(Type derived, Type ancestor)
+		{
+			if (derived == null || ancestor == null)
+				return int.MaxValue;
+
+			int distance = 0;
+			var cur = derived;
+			while (cur != null)
+			{
+				if (cur == ancestor)
+					return distance;
+
+				cur = cur.BaseType;
+				distance++;
+			}
+
+			// ancestor not found in chain -> large distance
+			return int.MaxValue;
+		}
+
 		public static object GetFieldValue(object targetObject, string fieldName) => GetFieldInfo(targetObject, fieldName).GetValue(targetObject);
 
 		#endregion

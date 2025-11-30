@@ -36,7 +36,18 @@ namespace Nez.ImGuiTools.TypeInspectors
 			var targetType = target.GetType();
 			var isComponentSubclass = target is Component;
 
+			// Fetch all fields and properties, then merge them by name.
+			// When a name exists on both a field and a property we keep only the member
+			// whose declaring type is closest to the targetType (using ReflectionUtils.GetHierarchyDistance).
+			// If distances are equal, prefer the property.
+
 			var fields = ReflectionUtils.GetFields(targetType);
+			var properties = ReflectionUtils.GetProperties(targetType);
+
+			// build dictionary of chosen members keyed by name
+			var chosen = new Dictionary<string, MemberInfo>(StringComparer.Ordinal);
+
+			// add all fields as initial choices
 			foreach (var field in fields)
 			{
 				if (field.IsStatic || field.IsDefined(notInspectableAttrType))
@@ -56,7 +67,55 @@ namespace Nez.ImGuiTools.TypeInspectors
 				if (isComponentSubclass && (field.Name == "Enabled" || field.Name == "Entity"))
 					continue;
 
-				var inspector = GetInspectorForType(field.FieldType, target, field);
+				chosen[field.Name] = field;
+			}
+
+			// compare and add/replace with properties where appropriate
+			foreach (var prop in properties)
+			{
+				// if prop is static or we used NotInspectable skip a bit later during processing - keep here
+				if (prop.IsDefined(notInspectableAttrType))
+					continue;
+
+				if (chosen.TryGetValue(prop.Name, out var existing))
+				{
+					// compare distances: smaller distance is closer to targetType
+					var distExisting = ReflectionUtils.GetHierarchyDistance(targetType, existing.DeclaringType);
+					var distProp = ReflectionUtils.GetHierarchyDistance(targetType, prop.DeclaringType);
+
+					// prefer the closer declaring type; if equal distances, prefer property
+					if (distProp <= distExisting)
+						chosen[prop.Name] = prop;
+				}
+				else
+				{
+					chosen[prop.Name] = prop;
+				}
+			}
+
+			// Now process the chosen members (combined fields and properties)
+			foreach (var member in chosen.Values)
+			{
+				if (member is FieldInfo field)
+				{
+					if (field.IsStatic || field.IsDefined(notInspectableAttrType))
+						continue;
+
+					var hasInspectableAttribute = field.IsDefined(inspectableAttrType);
+
+					// private fields must have the InspectableAttribute
+					if (!field.IsPublic && !hasInspectableAttribute)
+						continue;
+
+					// similarly, readonly fields must have the InspectableAttribute
+					if (field.IsInitOnly && !hasInspectableAttribute)
+						continue;
+
+					// skip enabled and entity which is handled elsewhere if this is a Component
+					if (isComponentSubclass && (field.Name == "Enabled" || field.Name == "Entity"))
+						continue;
+
+					var inspector = GetInspectorForType(field.FieldType, target, field);
 				if (inspector != null)
 				{
 					inspector.SetTarget(target, field);
@@ -64,58 +123,57 @@ namespace Nez.ImGuiTools.TypeInspectors
 					inspectors.Add(inspector);
 				}
 
-				if(field.GetAttribute<InspectorSerializableAttribute>() != null)
-				{
-					var serializeInspector = new TI.SerializerInspector();
-					serializeInspector.SetTarget(target, field);
-					inspector.Initialize();
-					inspectors.Add(serializeInspector);
+					if(field.GetAttribute<InspectorSerializableAttribute>() != null)
+					{
+						var serializeInspector = new TI.SerializerInspector();
+						serializeInspector.SetTarget(target, field);
+						inspector.Initialize();
+						inspectors.Add(serializeInspector);
+					}
 				}
-			}
-
-			var properties = ReflectionUtils.GetProperties(targetType);
-			foreach (var prop in properties)
-			{
-				if(target is IList && (prop.Name == "Item" || prop.Name == "Capacity"))
-					continue;
-
-				if (prop.IsDefined(notInspectableAttrType))
-					continue;
-
-				// Transforms and Component subclasses arent useful to inspect
-				if (prop.PropertyType == transformType || prop.PropertyType.IsSubclassOf(componentType))
-					continue;
-
-				if (!prop.CanRead || prop.GetGetMethod(true).IsStatic)
-					continue;
-
-				var hasInspectableAttribute = prop.IsDefined(inspectableAttrType);
-
-				// private props must have the InspectableAttribute
-				if (!prop.GetMethod.IsPublic && !hasInspectableAttribute)
-					continue;
-
-				// similarly, readonly props must have the InspectableAttribute
-				if (!prop.CanWrite && !hasInspectableAttribute)
-					continue;
-
-				// skip Component.enabled  and entity which is handled elsewhere
-				if (isComponentSubclass && (prop.Name == "Enabled" || prop.Name == "Entity"))
-					continue;
-
-				var inspector = GetInspectorForType(prop.PropertyType, target, prop);
-				if (inspector != null)
+				else if (member is PropertyInfo prop)
 				{
-					inspector.SetTarget(target, prop);
-					inspector.Initialize();
-					inspectors.Add(inspector);
-				}
-				if (prop.GetAttribute<InspectorSerializableAttribute>() != null)
-				{
-					var serializeInspector = new TI.SerializerInspector();
-					serializeInspector.SetTarget(target, prop);
-					inspector.Initialize();
-					inspectors.Add(serializeInspector);
+					if(target is IList && (prop.Name == "Item" || prop.Name == "Capacity"))
+						continue;
+
+					if (prop.IsDefined(notInspectableAttrType))
+						continue;
+
+					// Transforms and Component subclasses arent useful to inspect
+					if (prop.PropertyType == transformType || prop.PropertyType.IsSubclassOf(componentType))
+						continue;
+
+					if (!prop.CanRead || prop.GetGetMethod(true).IsStatic)
+						continue;
+
+					var hasInspectableAttribute = prop.IsDefined(inspectableAttrType);
+
+					// private props must have the InspectableAttribute
+					if (!prop.GetMethod.IsPublic && !hasInspectableAttribute)
+						continue;
+
+					// similarly, readonly props must have the InspectableAttribute
+					if (!prop.CanWrite && !hasInspectableAttribute)
+						continue;
+
+					// skip Component.enabled  and entity which is handled elsewhere
+					if (isComponentSubclass && (prop.Name == "Enabled" || prop.Name == "Entity"))
+						continue;
+
+					var inspector = GetInspectorForType(prop.PropertyType, target, prop);
+					if (inspector != null)
+					{
+						inspector.SetTarget(target, prop);
+						inspector.Initialize();
+						inspectors.Add(inspector);
+					}
+					if (prop.GetAttribute<InspectorSerializableAttribute>() != null)
+					{
+						var serializeInspector = new TI.SerializerInspector();
+						serializeInspector.SetTarget(target, prop);
+						inspector.Initialize();
+						inspectors.Add(serializeInspector);
+					}
 				}
 			}
 
