@@ -32,6 +32,11 @@ namespace Nez
 		}
 
 		/// <summary>
+        /// The parent Entity of this Component's Entity
+        /// </summary>
+		public Entity Parent => Transform.Parent?.Entity;
+
+		/// <summary>
 		/// true if the Component is enabled and the Entity is enabled. When enabled this Components lifecycle methods will be called.
 		/// Changes in state result in onEnabled/onDisable being called.
 		/// </summary>
