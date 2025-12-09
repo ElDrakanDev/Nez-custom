@@ -3,20 +3,40 @@ using System.Collections.Generic;
 
 namespace Nez
 {
-	/// <summary>
-	/// helper class illustrating one way to handle movement taking into account all Collisions including triggers. The ITriggerListener
-	/// interface is used to manage callbacks to any triggers that are breached while moving. An object must move only via the Mover.move
-	/// method for triggers to be properly reported. Note that multiple Movers interacting with each other will end up calling ITriggerListener
-	/// multiple times.
-	/// </summary>
-	public class Mover : Component
-	{
+    /// <summary>
+    /// helper class illustrating one way to handle movement taking into account all Collisions including triggers. The ITriggerListener
+    /// interface is used to manage callbacks to any triggers that are breached while moving. An object must move only via the Mover.move
+    /// method for triggers to be properly reported. Note that multiple Movers interacting with each other will end up calling ITriggerListener
+    /// multiple times.
+    /// </summary>
+    public class Mover : Component, IMover
+    {
 		ColliderTriggerHelper _triggerHelper;
 
-		public override void OnAddedToEntity()
-		{
-			_triggerHelper = new ColliderTriggerHelper(Entity);
-		}
+        public override void OnAddedToEntity()
+        {
+            _triggerHelper = new ColliderTriggerHelper(Entity);
+        }
+
+        /// <summary>
+        /// Moves the Entity by the given motion vector, reporting collisions via the out parameter.
+        /// </summary>
+        /// <param name="motion">Desired movement delta.</param>
+        /// <param name="collisionResult">Information about the first collision encountered.</param>
+        public bool Move(Vector2 motion, out CollisionResult collisionResult)
+        {
+            CalculateMovement(ref motion, out collisionResult);
+            ApplyMovement(motion);
+            return collisionResult.Collider != null;
+        }
+
+        /// <summary>
+        /// IMover implementation wrapper.
+        /// </summary>
+        public bool Move(Vector2 motion)
+        {
+            return Move(motion, out _);
+        }
 
         /// <summary>
         /// caculates the movement modifying the motion vector to take into account any collisions that will
@@ -141,19 +161,5 @@ namespace Nez
 			_triggerHelper?.Update();
 		}
 
-		/// <summary>
-		/// moves the entity taking collisions into account by calling calculateMovement followed by applyMovement;
-		/// </summary>
-		/// <returns><c>true</c>, if move actor was newed, <c>false</c> otherwise.</returns>
-		/// <param name="motion">Motion.</param>
-		/// <param name="collisionResult">Collision result.</param>
-		public bool Move(Vector2 motion, out CollisionResult collisionResult)
-		{
-			CalculateMovement(ref motion, out collisionResult);
-
-			ApplyMovement(motion);
-
-			return collisionResult.Collider != null;
-		}
 	}
 }

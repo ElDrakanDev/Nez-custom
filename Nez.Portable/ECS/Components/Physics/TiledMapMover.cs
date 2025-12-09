@@ -3,6 +3,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using Nez;
 
 
 namespace Nez.Tiled
@@ -26,8 +27,9 @@ namespace Nez.Tiled
 #if DEBUG_MOVER
 	RenderableComponent
 #else
-		Component
+			Component
 #endif
+			, IMover
 	{
 		/// <summary>
 		/// class used to house all the collision information from a call to move
@@ -122,6 +124,8 @@ namespace Nez.Tiled
 		/// </summary>
 		Rectangle _boxColliderBounds;
 
+		readonly CollisionState _defaultCollisionState = new CollisionState();
+
 
 		public TiledMapMover()
 		{ }
@@ -134,7 +138,7 @@ namespace Nez.Tiled
 		}
 
 		/// <summary>
-		/// moves the Entity taking into account the tiled map
+		/// Moves the Entity by the given motion vector using the provided BoxCollider and collision state.
 		/// </summary>
 		/// <param name="motion">Motion.</param>
 		/// <param name="boxCollider">Box collider.</param>
@@ -149,6 +153,19 @@ namespace Nez.Tiled
 			boxCollider.UnregisterColliderWithPhysicsSystem();
 			boxCollider.Entity.Transform.Position += motion;
 			boxCollider.RegisterColliderWithPhysicsSystem();
+		}
+
+		/// <summary>
+		/// IMover implementation using the Entity BoxCollider and an internal CollisionState.
+		/// </summary>
+		public bool Move(Vector2 motion)
+		{
+			var boxCollider = Entity.GetComponent<BoxCollider>();
+			if (boxCollider == null)
+				return false;
+
+			Move(motion, boxCollider, _defaultCollisionState);
+			return _defaultCollisionState.HasCollision;
 		}
 
 		public void TestCollisions(ref Vector2 motion, Rectangle boxColliderBounds, CollisionState collisionState)

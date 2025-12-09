@@ -8,7 +8,7 @@ namespace Nez
 	/// moves taking collision into account only for reporting to any ITriggerListeners. The object will always move the full amount so it is up
 	/// to the caller to destroy it on impact if desired.
 	/// </summary>
-	public class ProjectileMover : Component
+	public class ProjectileMover : Component, IMover
 	{
 		List<ITriggerListener> _tempTriggerList = new List<ITriggerListener>();
 		Collider _collider;
