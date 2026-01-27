@@ -86,6 +86,8 @@ namespace Nez
 			set => SetLocalOffset(value);
 		}
 
+		public Vector2 ScaledLocalOffset => _localOffset * Entity.Transform.Scale;
+
 		/// <summary>
 		/// the visibility of this Renderable. Changes in state end up calling the onBecameVisible/onBecameInvisible methods.
 		/// </summary>

@@ -206,7 +206,7 @@ namespace Nez.Sprites
 				effects |= SpriteEffects.FlipHorizontally;
 			if(Entity.Transform.Scale.Y < 0)
 				effects |= SpriteEffects.FlipVertically;
-			batcher.Draw(Sprite, Entity.Transform.Position + LocalOffset, Color,
+			batcher.Draw(Sprite, Entity.Transform.Position + ScaledLocalOffset, Color,
 				Entity.Transform.Rotation, Origin, scale, effects, _layerDepth);
 		}
 	}

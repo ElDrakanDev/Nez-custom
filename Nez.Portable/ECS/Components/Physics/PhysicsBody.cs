@@ -14,7 +14,7 @@ namespace Nez
         IMover _mover;
 
         public PhysicsBody(){
-            UpdateOrder = int.MaxValue;
+            UpdateOrder = int.MinValue;
         }
 
         public override void OnAddedToEntity()

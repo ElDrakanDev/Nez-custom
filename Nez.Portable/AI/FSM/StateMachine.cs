@@ -15,7 +15,7 @@ namespace Nez.AI.FSM
 
 		protected State<T> _currentState;
 		protected T _context;
-		Dictionary<Type, State<T>> _states = new Dictionary<Type, State<T>>();
+		readonly List<State<T>> _states = new List<State<T>>();
 
 
 		public StateMachine(T context, State<T> initialState)
@@ -35,7 +35,7 @@ namespace Nez.AI.FSM
 		public void AddState(State<T> state)
 		{
 			state.SetMachineAndContext(this, _context);
-			_states[state.GetType()] = state;
+			_states.Add(state);
 		}
 
 
@@ -55,35 +55,48 @@ namespace Nez.AI.FSM
 		/// </summary>
 		public virtual R GetState<R>() where R : State<T>
 		{
+			for (var i = 0; i < _states.Count; i++)
+			{
+				if (_states[i] is R typedState)
+					return typedState;
+			}
+
 			var type = typeof(R);
-			Insist.IsTrue(_states.ContainsKey(type),
+			Insist.IsTrue(false,
 				"{0}: state {1} does not exist. Did you forget to add it by calling addState?", GetType(), type);
-
-			return (R)_states[type];
+			return null;
 		}
-
 
 		/// <summary>
 		/// changes the current state
 		/// </summary>
 		public R ChangeState<R>() where R : State<T>
 		{
+			var newState = GetState<R>();
+			return ChangeState(newState);
+		}
+
+		/// <summary>
+		/// changes the current state to the provided instance
+		/// </summary>
+		public R ChangeState<R>(R state) where R : State<T>
+		{
+			Insist.IsNotNull(state);
+			Insist.IsTrue(_states.Contains(state),
+				"{0}: state instance {1} is not registered. Did you forget to add it by calling addState?", GetType(), state.GetType());
+
 			// avoid changing to the same state
-			var newType = typeof(R);
-			if (_currentState.GetType() == newType)
+			if (_currentState != null && _currentState.GetType() == state.GetType())
 				return _currentState as R;
 
 			// only call end if we have a currentState
 			if (_currentState != null)
 				_currentState.End();
 
-			Insist.IsTrue(_states.ContainsKey(newType),
-				"{0}: state {1} does not exist. Did you forget to add it by calling addState?", GetType(), newType);
-
 			// swap states and call begin
 			ElapsedTimeInState = 0f;
 			PreviousState = _currentState;
-			_currentState = _states[newType];
+			_currentState = state;
 			_currentState.Begin();
 
 			// fire the changed event if we have a listener
