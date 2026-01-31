@@ -211,6 +211,13 @@ namespace Nez.Sprites
 			return component;
 		}
 
+		public override void Render(Batcher batcher, Camera camera)
+		{
+			if(AnimationState == State.Completed && _loopMode == LoopMode.Once)
+				return;
+			base.Render(batcher, camera);
+		}
+
 		#region Playback
 
 		/// <summary>
