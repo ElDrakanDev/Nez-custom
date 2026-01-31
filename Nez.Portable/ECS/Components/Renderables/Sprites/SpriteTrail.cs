@@ -326,7 +326,7 @@ namespace Nez.Sprites
 		/// </summary>
 		void SpawnInstance()
 		{
-			_lastPosition = _sprite.Entity.Transform.Position + _sprite.LocalOffset;
+			_lastPosition = _sprite.Entity.Transform.Position + (_sprite.LocalOffset * Entity.Scale);
 
 			if (_awaitingDisable || _availableSpriteTrailInstances.Count == 0)
 				return;
