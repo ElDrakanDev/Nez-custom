@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 
@@ -219,6 +220,29 @@ namespace Nez
 					var component = _componentsToAdd[i];
 					if (component is T)
 						return component as T;
+				}
+			}
+
+			return null;
+		}
+
+		public Component GetComponent(Type t, bool onlyReturnInitializedComponents)
+		{
+			for (var i = 0; i < _components.Length; i++)
+			{
+				var component = _components.Buffer[i];
+				if (component.GetType() == t)
+					return component;
+			}
+
+			// we optionally check the pending components just in case addComponent and getComponent are called in the same frame
+			if (!onlyReturnInitializedComponents)
+			{
+				for (var i = 0; i < _componentsToAdd.Count; i++)
+				{
+					var component = _componentsToAdd[i];
+					if (component.GetType() == t)
+						return component;
 				}
 			}
 

@@ -433,6 +433,15 @@ namespace Nez
 			return component;
 		}
 
+		public Component AddComponent(Type type)
+		{
+			var component = Activator.CreateInstance(type) as Component;
+			component.Entity = this;
+			Components.Add(component);
+			component.Initialize();
+			return component;
+		}
+
 		/// <summary>
 		/// Adds a Component to the components list. Returns the Component.
 		/// </summary>
@@ -480,6 +489,15 @@ namespace Nez
 			var comp = Components.GetComponent<T>(true);
 			if (comp == null)
 				comp = AddComponent<T>();
+
+			return comp;
+		}
+
+		public Component GetOrCreateComponent(Type t)
+		{
+			var comp = Components.GetComponent(t, true);
+			if (comp == null)
+				comp = AddComponent(t);
 
 			return comp;
 		}
