@@ -6,6 +6,7 @@ using System;
 
 namespace Nez.Sprites
 {
+	[Serializable]
 	/// <summary>
 	/// the most basic and common Renderable. Renders a Sprite/Texture.
 	/// </summary>

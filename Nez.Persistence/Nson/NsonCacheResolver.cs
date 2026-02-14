@@ -117,12 +117,18 @@ namespace Nez.Persistence
 			// no data cached. Fetch and populate it now
 			map = new Dictionary<string, FieldInfo>();
 			_fieldInfoCache[type] = map;
-
-			var allFields = type.GetFields(NsonConstants.instanceBindingFlags);
-			foreach (var field in allFields)
+			var name = type.FullName;
+			// Walk the inheritance hierarchy to get all instance fields including inherited ones
+			var currentType = type;
+			while (currentType != null)
 			{
-				if (!field.IsNotSerialized)
-					map[field.Name] = field;
+				var allFields = currentType.GetFields(NsonConstants.instanceBindingFlags | BindingFlags.DeclaredOnly);
+				foreach (var field in allFields)
+				{
+					if (!field.IsNotSerialized && !map.ContainsKey(field.Name))
+						map[field.Name] = field;
+				}
+				currentType = currentType.BaseType;
 			}
 
 			return map;

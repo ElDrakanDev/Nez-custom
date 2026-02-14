@@ -1,9 +1,11 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Nez.Persistence;
 
 
 namespace Nez
 {
+	[Serializable]
 	/// <summary>
 	/// concrete implementation of IRenderable. Contains convenience methods.
 	///
@@ -111,7 +113,7 @@ namespace Nez
 
 		public bool DebugRenderEnabled = true;
 
-		protected Vector2 _localOffset;
+		[NsonInclude] protected Vector2 _localOffset;
 		protected float _layerDepth;
 		protected int _renderLayer;
 		protected RectangleF _bounds;

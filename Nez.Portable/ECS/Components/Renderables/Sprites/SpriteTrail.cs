@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Nez.Sprites
 {
+	[Serializable]
 	/// <summary>
 	/// renders and fades a series of copies of the Sprite on the same Entity. minDistanceBetweenInstances determines how often a trail
 	/// sprite is added.
