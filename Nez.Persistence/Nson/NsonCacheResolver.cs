@@ -117,7 +117,7 @@ namespace Nez.Persistence
 			// no data cached. Fetch and populate it now
 			map = new Dictionary<string, FieldInfo>();
 			_fieldInfoCache[type] = map;
-			var name = type.FullName;
+
 			// Walk the inheritance hierarchy to get all instance fields including inherited ones
 			var currentType = type;
 			while (currentType != null)
