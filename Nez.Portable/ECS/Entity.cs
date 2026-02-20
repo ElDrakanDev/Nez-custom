@@ -484,20 +484,20 @@ namespace Nez
 		/// </summary>
 		/// <returns>The component.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T GetOrCreateComponent<T>() where T : Component, new()
+		public T GetOrCreateComponent<T>(bool onlyReturnInitializedComponents = true) where T : Component, new()
 		{
-			var comp = Components.GetComponent<T>(true);
+			var comp = Components.GetComponent<T>(onlyReturnInitializedComponents);
 			if (comp == null)
 				comp = AddComponent<T>();
 
 			return comp;
 		}
 
-		public Component GetOrCreateComponent(Type t)
+		public Component GetOrCreateComponent(Type type, bool onlyReturnInitializedComponents = true)
 		{
-			var comp = Components.GetComponent(t, true);
+			var comp = Components.GetComponent(type, onlyReturnInitializedComponents);
 			if (comp == null)
-				comp = AddComponent(t);
+				comp = AddComponent(type);
 
 			return comp;
 		}
