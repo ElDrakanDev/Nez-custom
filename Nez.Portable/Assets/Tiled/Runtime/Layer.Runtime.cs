@@ -13,6 +13,20 @@ namespace Nez.Tiled
 		/// <param name="y">The y coordinate.</param>
 		public TmxLayerTile GetTile(int x, int y) => Tiles[x + y * Width];
 
+        /// <summary>
+		/// gets the TmxLayerTile at the x/y coordinates with no index errors. Note that these are tile coordinates not world coordinates!
+		/// </summary>
+		/// <returns>The tile.</returns>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		public TmxLayerTile GetTileSafe(int x, int y)
+		{
+			if (x < 0 || x >= Width || y < 0 || y >= Height)
+				return null;
+
+			return GetTile(x, y);
+		}
+
 		/// <summary>
 		/// gets the TmxLayerTile at the given world position
 		/// </summary>
