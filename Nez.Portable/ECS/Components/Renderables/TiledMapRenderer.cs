@@ -160,26 +160,58 @@ namespace Nez
 
 		#region Colliders
 
+		/// <summary>
+		/// Adds the colliders for the given layer name. If physicsLayer is -1, it will use the default PhysicsLayer set on this component. This method can be used to add colliders for multiple layers if you have more than one collision layer in your TiledMap.
+		/// </summary>
+		/// <param name="layerName"></param>
+		/// <param name="physicsLayer"></param>
+		/// <returns></returns>
+		public Collider[] AddCollidersForLayer(string layerName, int physicsLayer = -1)
+		{
+			if(physicsLayer == -1)
+				physicsLayer = PhysicsLayer;
+			// fetch the collision layer and its rects for collision
+			var layer = TiledMap.TileLayers[layerName];
+			if(layer == null)
+			{
+				Debug.Error("TiledMapRenderer: No layer found with name {0}", layerName);
+				return new Collider[0];
+			}
+			var collisionRects = layer.GetCollisionRectangles();
+
+			// create colliders for the rects we received
+			var colliders = new Collider[collisionRects.Count];
+			for (var i = 0; i < collisionRects.Count; i++)
+			{
+				var collider = new BoxCollider(collisionRects[i].X + _localOffset.X,
+					collisionRects[i].Y + _localOffset.Y, collisionRects[i].Width, collisionRects[i].Height);
+				collider.PhysicsLayer = physicsLayer;
+				collider.Entity = Entity;
+				colliders[i] = collider;
+
+				Physics.AddCollider(collider);
+			}
+
+			if(_colliders is null)
+				_colliders = colliders;
+			else
+			{
+				var length = _colliders.Length + colliders.Length;
+				var newColliders = new Collider[length];
+				_colliders.CopyTo(newColliders, 0);
+				colliders.CopyTo(newColliders, _colliders.Length);
+				_colliders = newColliders;
+			}
+				
+			return colliders;
+		}
+
 		public void AddColliders()
 		{
 			if (CollisionLayer == null || !_shouldCreateColliders)
 				return;
 
-			// fetch the collision layer and its rects for collision
-			var collisionRects = CollisionLayer.GetCollisionRectangles();
-
-			// create colliders for the rects we received
-			_colliders = new Collider[collisionRects.Count];
-			for (var i = 0; i < collisionRects.Count; i++)
-			{
-				var collider = new BoxCollider(collisionRects[i].X + _localOffset.X,
-					collisionRects[i].Y + _localOffset.Y, collisionRects[i].Width, collisionRects[i].Height);
-				collider.PhysicsLayer = PhysicsLayer;
-				collider.Entity = Entity;
-				_colliders[i] = collider;
-
-				Physics.AddCollider(collider);
-			}
+			AddCollidersForLayer(CollisionLayer.Name);
 		}
 
 		public void RemoveColliders()
